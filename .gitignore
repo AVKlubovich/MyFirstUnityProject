@@ -36,3 +36,6 @@ sysinfo.txt
 *.unitypackage
 
 client_*
+
+# Archives
+*.zip
