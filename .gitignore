@@ -39,3 +39,6 @@ client_*
 
 # Archives
 *.zip
+
+# VSCode
+settings.json
