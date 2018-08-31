@@ -9,7 +9,9 @@ public class SetupLocalPlayer : NetworkBehaviour
     public Text namePrefab;
     public Text nameLabel;
     public Transform namePos;
+    string textboxName = "";
 
+    [SyncVar (hook = "OnChangeName")]
     public string playerName = "player";
 
     // Use this for initialization
@@ -28,6 +30,7 @@ public class SetupLocalPlayer : NetworkBehaviour
         }
 
         this._prepareName();
+        this.OnChangeName(this.playerName);
     }
 
     private void _prepareName()
@@ -48,8 +51,26 @@ public class SetupLocalPlayer : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            playerName = GUI.TextField(new Rect(25, 15, 100, 25), playerName);
-            nameLabel.text = playerName;
+            this.textboxName = GUI.TextField(new Rect(25, 15, 100, 25), this.textboxName);
+            if (GUI.Button(new Rect(130, 15, 55, 25), "Change"))
+            {
+                CmdChangeName(this.textboxName);
+                this.textboxName = "";
+                GUI.TextField(new Rect(25, 15, 100, 25), this.textboxName);
+            }
         }
+    }
+
+    [Command]
+    public void CmdChangeName(string newName)
+    {
+        this.playerName = newName;
+        this.nameLabel.text = this.playerName;
+    }
+
+    public void OnChangeName(string newName)
+    {
+        this.playerName = newName;
+        this.nameLabel.text = this.playerName;
     }
 }
