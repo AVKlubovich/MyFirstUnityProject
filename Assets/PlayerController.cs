@@ -26,14 +26,20 @@ public class PlayerController : MonoBehaviour {
         rb.MovePosition(rb.position + this.transform.forward * translation);
         rb.MoveRotation(rb.rotation * turn);
 
-        if(translation != 0) 
-        	animator.SetBool("Idling", false);
+        if(translation != 0)
+        {
+            animator.SetBool("Idling", false);
+            this.GetComponent<SetupLocalPlayer>().CmdChangeAnimState("idle");
         else
-        	animator.SetBool("Idling", true);
+        {
+            animator.SetBool("Idling", true);
+            this.GetComponent<SetupLocalPlayer>().CmdChangeAnimState("idle");
+        }
 
         if(Input.GetKeyDown("space"))
         {
-			animator.SetTrigger("Attacking");
+            animator.SetTrigger("Attacking");
+            this.GetComponent<SetupLocalPlayer>().CmdChangeAnimState("attack");
         }
-	}
+    }
 }
