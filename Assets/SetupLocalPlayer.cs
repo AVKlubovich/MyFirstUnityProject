@@ -11,11 +11,23 @@ public class SetupLocalPlayer : NetworkBehaviour {
 	string textboxname = "";
 	string colourboxname = "";
 
+    public Slider healthPrefab;
+    public Slider health;
+
+    [SyncVar (hook = "OnChangeHealth")]
+    public int healthValue = 100;
+
 	[SyncVar (hook = "OnChangeName")]
 	public string pName = "player";
 
 	[SyncVar (hook = "OnChangeColour")]
 	public string pColour = "#ffffff";
+
+    void OnChangeHealth(int n)
+    {
+        healthValue = n;
+        health.value = healthValue;
+    }
 
     void OnChangeName (string n)
     {
@@ -51,10 +63,17 @@ public class SetupLocalPlayer : NetworkBehaviour {
 
         foreach( Renderer r in rends )
         {
-         	if(r.gameObject.name == "BODY")
-            	r.material.SetColor("_Color", ColorFromHex(pColour));
+            if (r.gameObject.name == "BODY")
+                r.material.SetColor("_Color", ColorFromHex(pColour));
         }
 	}
+
+    [Command]
+    public void CmdChangeHealth(int hitValue)
+    {
+        healthValue = healthValue + hitValue;
+        health.value = healthValue;
+    }
 
 	void OnGUI()
 	{
@@ -104,12 +123,18 @@ public class SetupLocalPlayer : NetworkBehaviour {
 		GameObject canvas = GameObject.FindWithTag("MainCanvas");
 		nameLabel = Instantiate(namePrefab, Vector3.zero, Quaternion.identity) as Text;
 		nameLabel.transform.SetParent(canvas.transform);
+
+        health = Instantiate(healthPrefab, Vector3.zero, Quaternion.identity) as Slider;
+        health.transform.SetParent(canvas.transform);
 	}
 
 	public void OnDestroy()
 	{
-		if(nameLabel != null)
-			Destroy(nameLabel.gameObject);
+        if(nameLabel != null && health != null)
+        {
+            Destroy(nameLabel.gameObject);
+            Destroy(health.gameObject);
+        }
 	}
 
 	void Update()
@@ -125,9 +150,22 @@ public class SetupLocalPlayer : NetworkBehaviour {
 			{
 				Vector3 nameLabelPos = Camera.main.WorldToScreenPoint(namePos.position);
 				nameLabel.transform.position = nameLabelPos;
+
+                health.transform.position = nameLabelPos + new Vector3(0, 15, 0);
 			}
-			else //otherwise draw it WAY off the screen 
-				nameLabel.transform.position = new Vector3(-1000,-1000,0);
+			else //otherwise draw it WAY off the screen
+            {
+                nameLabel.transform.position = new Vector3(-1000, -1000, 0);
+                health.transform.position = new Vector3(-1000, -1000, 0);
+            }
 		}
 	}
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (isLocalPlayer && collision.gameObject.tag == "Bullet")
+        {
+            CmdChangeHealth(-5);
+        }
+    }
 }
