@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
 	Rigidbody rb;
-    float speed = 10.0F;
+    public float speed = 10.0F;
     float rotationSpeed = 50.0F;
     Animator animator;
 
@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour {
     }
 	
     // Update is called once per frame
-	void LateUpdate () {
+	void FixedUpdate () {
 	
         float translation = Input.GetAxis("Vertical") * speed;
         float rotation = Input.GetAxis("Horizontal") * rotationSpeed;
@@ -26,20 +26,16 @@ public class PlayerController : MonoBehaviour {
         rb.MovePosition(rb.position + this.transform.forward * translation);
         rb.MoveRotation(rb.rotation * turn);
 
-        if(translation != 0)
+        if(translation != 0) 
         {
             animator.SetBool("Idling", false);
-            this.GetComponent<SetupLocalPlayer>().CmdChangeAnimState("idle");
+            this.GetComponent<SetupLocalPlayer>().CmdChangeAnimState("run");
+        }
         else
         {
             animator.SetBool("Idling", true);
             this.GetComponent<SetupLocalPlayer>().CmdChangeAnimState("idle");
         }
 
-        if(Input.GetKeyDown("space"))
-        {
-            animator.SetTrigger("Attacking");
-            this.GetComponent<SetupLocalPlayer>().CmdChangeAnimState("attack");
-        }
-    }
+	}
 }
