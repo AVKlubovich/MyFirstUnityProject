@@ -9,13 +9,13 @@ public class SetupLocalPlayer : NetworkBehaviour {
 	public GameObject nameLabel;
 	public Transform namePos;
 	string textboxname = "";
-	string colourboxname = "";
+	string colorboxname = "";
 
 	[SyncVar (hook = "OnChangeName")]
 	public string pName = "player";
 
-	[SyncVar (hook = "OnChangeColour")]
-	public string pColour = "#ffffff";
+	[SyncVar (hook = "OnChangeColor")]
+	public string pColor = "#ffffff";
 
     void OnChangeName (string n)
     {
@@ -23,15 +23,15 @@ public class SetupLocalPlayer : NetworkBehaviour {
 		nameLabel.transform.Find("NameText").gameObject.GetComponent<Text>().text = pName;
     }
 
-    void OnChangeColour (string n)
+    void OnChangeColor(string n)
     {
-		pColour = n;
+		pColor = n;
 		Renderer[] rends = GetComponentsInChildren<Renderer>( );
 
         foreach( Renderer r in rends )
         {
          	if(r.gameObject.name == "BODY")
-            	r.material.SetColor("_Color", ColorFromHex(pColour));
+            	r.material.SetColor("_Color", ColorFromHex(pColor));
         }
     }
 
@@ -44,15 +44,15 @@ public class SetupLocalPlayer : NetworkBehaviour {
 	}
 
 	[Command]
-	public void CmdChangeColour(string newColour)
+	public void CmdChangeColor(string newColor)
 	{
-		pColour = newColour;
+		pColor = newColor;
 		Renderer[] rends = GetComponentsInChildren<Renderer>( );
 
         foreach( Renderer r in rends )
         {
          	if(r.gameObject.name == "BODY")
-            	r.material.SetColor("_Color", ColorFromHex(pColour));
+            	r.material.SetColor("_Color", ColorFromHex(pColor));
         }
 	}
 
@@ -64,9 +64,9 @@ public class SetupLocalPlayer : NetworkBehaviour {
 			if(GUI.Button(new Rect(130,15,35,25),"Set"))
 				CmdChangeName(textboxname);
 
-			colourboxname = GUI.TextField (new Rect (170, 15, 100, 25), colourboxname);
+			colorboxname = GUI.TextField (new Rect (170, 15, 100, 25), colorboxname);
 			if(GUI.Button(new Rect(275,15,35,25),"Set"))
-				CmdChangeColour(colourboxname);
+				CmdChangeColor(colorboxname);
 		}
 	}
 
@@ -88,6 +88,13 @@ public class SetupLocalPlayer : NetworkBehaviour {
         return new Color32(r,g,b,a);
     }
 
+    void Awake()
+    {
+        GameObject canvas = GameObject.FindWithTag("MainCanvas");
+        nameLabel = Instantiate(namePrefab, Vector3.zero, Quaternion.identity);
+        nameLabel.transform.SetParent(canvas.transform);
+    }
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -100,10 +107,6 @@ public class SetupLocalPlayer : NetworkBehaviour {
 		{
 			GetComponent<MyPlayerController>().enabled = false;
 		}
-
-		GameObject canvas = GameObject.FindWithTag("MainCanvas");
-		nameLabel = Instantiate(namePrefab, Vector3.zero, Quaternion.identity);
-		nameLabel.transform.SetParent(canvas.transform);
 	}
 
 	void Update()
