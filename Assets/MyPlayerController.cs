@@ -1,19 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MyPlayerController : MonoBehaviour {
-
-	Rigidbody rb;
+public class MyPlayerController : MonoBehaviour
+{
+    Rigidbody rb;
     float speed = 25.0F;
     float rotationSpeed = 50.0F;
 
     void Start(){
         rb = this.GetComponent<Rigidbody>();
     }
-	
+
     // Update is called once per frame
-	void FixedUpdate () {
-	
+    void FixedUpdate ()
+    {
         float translation = Input.GetAxis("Vertical") * speed;
         float rotation = Input.GetAxis("Horizontal") * rotationSpeed;
         translation *= Time.deltaTime;
